@@ -4,7 +4,7 @@ import "./Row.css";
 
 const baseUrl = "https://image.tmdb.org/t/p/original";
 
-function Row({ title, fetchUrl }) {
+function Row({ title, fetchUrl, isLargeRow }) {
   const [movies, setMovies] = useState([]);
 
   //useeffect will run the code when the row loads
@@ -17,7 +17,7 @@ function Row({ title, fetchUrl }) {
     }
     fetchData();
   }, [fetchUrl]); //if [] run once the row loads and dont run again, if [movies] load as when everytime movies changes
-  console.log(movies);
+
   return (
     <div className="row">
       <h1>{title}</h1>
@@ -25,8 +25,10 @@ function Row({ title, fetchUrl }) {
         {movies.map((movie) => (
           <img
             key={movie.id}
-            className="row_poster"
-            src={`${baseUrl}${movie.poster_path}`}
+            className={`row_poster ${isLargeRow && "row_posterLarge"}`}
+            src={`${baseUrl}${
+              isLargeRow ? movie.poster_path : movie.backdrop_path
+            }`}
             alt={movie.name}
           />
         ))}
