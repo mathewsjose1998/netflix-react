@@ -23,6 +23,7 @@ function Banner() {
   console.log(movies);
 
   function truncate(str, n) {
+    //show ... after 150 letters by using truncate
     return str?.length > n ? str.substr(0, n - 1) + "..." : str;
   }
 
