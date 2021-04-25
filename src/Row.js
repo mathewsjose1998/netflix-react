@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "./axios";
 import "./Row.css";
+import Youtube from "react-youtube";
+import movieTrailer from "movie-trailer";
 
 const baseUrl = "https://image.tmdb.org/t/p/original";
 
 function Row({ title, fetchUrl, isLargeRow }) {
   const [movies, setMovies] = useState([]);
+  const [tarilerUrl, setTrailerUrl] = useState("");
 
   //useeffect will run the code when the row loads
   useEffect(() => {
@@ -18,12 +21,38 @@ function Row({ title, fetchUrl, isLargeRow }) {
     fetchData();
   }, [fetchUrl]); //if [] run once the row loads and dont run again, if [movies] load as when everytime movies changes
 
+  const opts = {
+    height: "390",
+    width: "100%",
+    playerVars: {
+      // https://developers.google.com/youtube/player_parameters
+      autoplay: 1,
+    },
+  };
+
+  const handleClick = (movie) => {
+    console.log(movie.name, movie.title);
+    if (tarilerUrl) {
+      setTrailerUrl("");
+    } else {
+      movieTrailer(movie?.name || movie?.title || "")
+        .then((url) => {
+          console.log(url);
+          const urlParams = new URLSearchParams(new URL(url).search);
+          setTrailerUrl(urlParams.get("v"));
+          //console.log(urlParams);
+        })
+        .catch((error) => console.log(error));
+    }
+  };
+
   return (
     <div className="row">
       <h1>{title}</h1>
       <div className="row_posters">
         {movies.map((movie) => (
           <img
+            onClick={() => handleClick(movie)}
             key={movie.id}
             className={`row_poster ${isLargeRow && "row_posterLarge"}`}
             src={`${baseUrl}${
@@ -33,6 +62,7 @@ function Row({ title, fetchUrl, isLargeRow }) {
           />
         ))}
       </div>
+      {tarilerUrl && <Youtube videoId={tarilerUrl} opts={opts} />}
     </div>
   );
 }
